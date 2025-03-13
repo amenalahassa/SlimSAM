@@ -177,6 +177,7 @@ class MLP(nn.Module):
             nn.Linear(n, k) for n, k in zip([input_dim] + h, h + [output_dim])
         )
         self.sigmoid_output = sigmoid_output
+        self.softmax_output = softmax_output
 
     def forward(self, x):
         for i, layer in enumerate(self.layers):
