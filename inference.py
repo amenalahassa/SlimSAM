@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import torch
 import torch.nn as nn
-from segment_anything import SamPredictor, sam_model_registry, SamAutomaticMaskGenerator
+from sem_slim_sam import SamPredictor, sam_model_registry, SamAutomaticMaskGenerator
 from segment_anything_kd.modeling.image_encoder import add_decomposed_rel_pos
 import matplotlib.pyplot as plt
 import torch_pruning as tp

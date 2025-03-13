@@ -4,8 +4,8 @@ from torch.utils.data import Dataset
 import torch
 import cv2
 import torch
-from segment_anything.utils.transforms import ResizeLongestSide
-from segment_anything import sam_model_registry
+from sem_slim_sam.utils.transforms import ResizeLongestSide
+from sem_slim_sam import sam_model_registry
 from typing import Any, Dict, List, Tuple
 
 
