@@ -66,6 +66,28 @@ def build_sam_vit_p77(checkpoint=None):
         checkpoint=checkpoint,
     )
 
+def build_ssam_vit_p50(checkpoint=None, num_classes=1000):
+    return _build_sam(
+        encoder_embed_dim=384,
+        mlp_dim=1536,
+        encoder_depth=12,
+        encoder_num_heads=12,
+        encoder_global_attn_indexes=[2, 5, 8, 11],
+        checkpoint=checkpoint,
+        num_classes=num_classes,
+    )
+
+def build_ssam_vit_p77(checkpoint=None, num_classes=1000):
+    return _build_sam(
+        encoder_embed_dim=168,
+        mlp_dim=696,
+        encoder_depth=12,
+        encoder_num_heads=12,
+        encoder_global_attn_indexes=[2, 5, 8, 11],
+        checkpoint=checkpoint,
+        num_classes=num_classes,
+    )
+
 
 sam_model_registry = {
     "default": build_sam_vit_h,
@@ -74,6 +96,8 @@ sam_model_registry = {
     "vit_b": build_sam_vit_b,
     "vit_p50": build_sam_vit_p50,
     "vit_p77": build_sam_vit_p77,
+    "svit_p50": build_ssam_vit_p50,
+    "svit_p77": build_ssam_vit_p77,
 }
 
 
@@ -85,6 +109,7 @@ def _build_sam(
     encoder_global_attn_indexes,
     checkpoint=None,
     use_rel_pos=True,
+    num_classes=1000,
 ):
     prompt_embed_dim = 256
     image_size = 1024
@@ -123,6 +148,7 @@ def _build_sam(
             transformer_dim=prompt_embed_dim,
             iou_head_depth=3,
             iou_head_hidden_dim=256,
+            num_classes=num_classes,
         ),
         pixel_mean=[123.675, 116.28, 103.53],
         pixel_std=[58.395, 57.12, 57.375],
