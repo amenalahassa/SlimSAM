@@ -75,6 +75,7 @@ def build_ssam_vit_p50(checkpoint=None, num_classes=1000):
         encoder_global_attn_indexes=[2, 5, 8, 11],
         checkpoint=checkpoint,
         num_classes=num_classes,
+        strict_weight_loading=False,
     )
 
 def build_ssam_vit_p77(checkpoint=None, num_classes=1000):
@@ -86,6 +87,7 @@ def build_ssam_vit_p77(checkpoint=None, num_classes=1000):
         encoder_global_attn_indexes=[2, 5, 8, 11],
         checkpoint=checkpoint,
         num_classes=num_classes,
+        strict_weight_loading=False,
     )
 
 
@@ -110,6 +112,7 @@ def _build_sam(
     checkpoint=None,
     use_rel_pos=True,
     num_classes=1000,
+    strict_weight_loading=True,
 ):
     prompt_embed_dim = 256
     image_size = 1024
@@ -157,5 +160,5 @@ def _build_sam(
     if checkpoint is not None:
         with open(checkpoint, "rb") as f:
             state_dict = torch.load(f)
-        sam.load_state_dict(state_dict, strict = True)
+        sam.load_state_dict(state_dict, strict = strict_weight_loading)
     return sam
