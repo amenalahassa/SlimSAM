@@ -180,19 +180,5 @@ def test_model():
         plt.savefig("images/"+"demo_everything" + ".png")
 
 
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
     test_model()

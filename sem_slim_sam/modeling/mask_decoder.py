@@ -46,10 +46,12 @@ class MaskDecoder(nn.Module):
         self.transformer = transformer
 
         self.num_multimask_outputs = num_multimask_outputs
+        self.num_classes = num_classes
+
+        is_multi_class = self.num_classes >= 1
 
         self.iou_token = nn.Embedding(1, transformer_dim)
-        self.num_mask_tokens = num_multimask_outputs + 1
-        self.num_classes = num_classes
+        self.num_mask_tokens = num_multimask_outputs + 1 if not is_multi_class else num_multimask_outputs + 2 # +1 for iou token, +1 for class token
         self.mask_tokens = nn.Embedding(self.num_mask_tokens, transformer_dim)
 
         self.output_upscaling = nn.Sequential(
@@ -70,9 +72,8 @@ class MaskDecoder(nn.Module):
             transformer_dim, iou_head_hidden_dim, self.num_mask_tokens, iou_head_depth
         )
 
-        is_multi_class = self.num_classes > 1
         self.class_prediction_head = MLP(
-            transformer_dim, iou_head_hidden_dim, self.num_classes, iou_head_depth, softmax_output = is_multi_class
+            transformer_dim, iou_head_hidden_dim, self.num_classes, iou_head_depth, softmax_output = num_classes > 2, sigmoid_output = num_classes <= 1
         )
 
     def forward(
@@ -140,6 +141,7 @@ class MaskDecoder(nn.Module):
         hs, src = self.transformer(src, pos_src, tokens)
         iou_token_out = hs[:, 0, :]
         mask_tokens_out = hs[:, 1 : (1 + self.num_mask_tokens), :]
+        class_token_out = hs[:, -1, :]
 
         # Upscale mask embeddings and predict masks using the mask tokens
         src = src.transpose(1, 2).view(b, c, h, w)
@@ -153,7 +155,7 @@ class MaskDecoder(nn.Module):
 
         # Generate mask quality predictions
         iou_pred = self.iou_prediction_head(iou_token_out)
-        cls_pred = self.class_prediction_head(iou_token_out + mask_tokens_out)
+        cls_pred = self.class_prediction_head(class_token_out)
 
         return masks, iou_pred, cls_pred
 
